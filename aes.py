@@ -175,20 +175,20 @@ class AES:
             round, hex(matrix2text(key))))
 
     def round_decrypt(self, round, state, key):
-        self.add_round_key(state, key)
-        print("round[{}].ik_sch {}".format(
-            round, hex(matrix2text(key))))
-
-        self.inv_mix_columns(state)
-        print("round[{}].im_col {}".format(
-            round, hex(matrix2text(self.cipher_state))))
-
         self.inv_shift_rows(state)
         print("round[{}].is_row {}".format(
             round, hex(matrix2text(self.cipher_state))))
 
         self.inv_sub_bytes(state)
         print("round[{}].is_box {}".format(
+            round, hex(matrix2text(self.cipher_state))))
+
+        self.add_round_key(state, key)
+        print("round[{}].ik_sch {}".format(
+            round, hex(matrix2text(key))))
+
+        self.inv_mix_columns(state)
+        print("round[{}].im_col {}".format(
             round, hex(matrix2text(self.cipher_state))))
 
     def encrypt(self, plain_text):
@@ -207,6 +207,8 @@ class AES:
             self.round_encrypt(i, self.plain_state,
                                self.round_keys[4 * i: 4 * (i + 1)]
                                )
+        print("round[10].start {}".format(hex(matrix2text(self.plain_state))))
+
         self.sub_bytes(self.plain_state)
         print("round[10].s_box {}".format(hex(matrix2text(self.plain_state))))
 
@@ -231,12 +233,6 @@ class AES:
         print("round[0].ik_sch {}".format(
             hex(matrix2text(round_key))))
 
-        self.inv_shift_rows(self.cipher_state)
-        print("round[0].is_row {}".format(hex(matrix2text(self.cipher_state))))
-
-        self.inv_sub_bytes(self.cipher_state)
-        print("round[0].is_box {}".format(hex(matrix2text(self.cipher_state))))
-
         for i in range(9, 0, -1):
             round = 10-i
             print("round[{}].istart {}".format(
@@ -244,6 +240,17 @@ class AES:
             )
             self.round_decrypt(
                 round, self.cipher_state, self.round_keys[4 * i: 4 * (i + 1)])
+
+        print("round[10].istart {}".format(
+            hex(matrix2text(self.cipher_state))))
+
+        self.inv_shift_rows(self.cipher_state)
+        print("round[10].is_row {}".format(
+            hex(matrix2text(self.cipher_state))))
+
+        self.inv_sub_bytes(self.cipher_state)
+        print("round[10].is_box {}".format(
+            hex(matrix2text(self.cipher_state))))
 
         round_key = self.round_keys[:4]
         self.add_round_key(self.cipher_state, round_key)
